@@ -1,0 +1,541 @@
+{
+  "info": {
+    "_postman_id": "517e0a7e-2df6-4557-b988-27104cafe012",
+    "name": "campus-lost-and-found-system-midterm",
+    "description": "Mid-term requirements and sample requests for Mugisha Igor (27104). Run requests in order. Saves should return HTTP 201 and their exact success message. Successful reads, updates, and deletes return HTTP 200. Error requests list their expected status and exact message in the request description. Save operations return messages, so the Step 0 GET requests read generated UUIDs into collection variables.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Step 0 - Sample data (run in order)",
+      "item": [
+        {
+          "name": "Step 0 - Save Electronics category",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"name\":\"Electronics\"}"},
+            "url": "{{baseUrl}}/api/item-categories/save",
+            "description": "Expected: HTTP 201, Item category saved successfully."
+          }
+        },
+        {
+          "name": "Step 0 - Save Documents category",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"name\":\"Documents\"}"},
+            "url": "{{baseUrl}}/api/item-categories/save",
+            "description": "Expected: HTTP 201, Item category saved successfully."
+          }
+        },
+        {
+          "name": "Step 0 - Save Clothing category",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"name\":\"Clothing\"}"},
+            "url": "{{baseUrl}}/api/item-categories/save",
+            "description": "Expected: HTTP 201, Item category saved successfully."
+          }
+        },
+        {
+          "name": "Step 0 - Save Keys category",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"name\":\"Keys\"}"},
+            "url": "{{baseUrl}}/api/item-categories/save",
+            "description": "Expected: HTTP 201, Item category saved successfully. Leave Keys unassigned for C3."
+          }
+        },
+        {
+          "name": "Step 0 - Read category IDs",
+          "request": {"method": "GET", "url": "{{baseUrl}}/api/item-categories/all"},
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Categories were created', function () { pm.response.to.have.status(200); });",
+                "const rows = pm.response.json();",
+                "pm.collectionVariables.set('categoryElectronicsId', rows.find(row => row.name === 'Electronics').id);",
+                "pm.collectionVariables.set('categoryDocumentsId', rows.find(row => row.name === 'Documents').id);",
+                "pm.collectionVariables.set('categoryClothingId', rows.find(row => row.name === 'Clothing').id);",
+                "pm.collectionVariables.set('categoryKeysId', rows.find(row => row.name === 'Keys').id);"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Step 0 - Save found desk 1",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"deskNumber\":1,\"name\":\"Main Library Desk\"}"},
+            "url": "{{baseUrl}}/api/found-desks/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save found desk 2",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"deskNumber\":2,\"name\":\"Student Center Desk\"}"},
+            "url": "{{baseUrl}}/api/found-desks/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save found desk 3",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"deskNumber\":3,\"name\":\"Science Block Desk\"}"},
+            "url": "{{baseUrl}}/api/found-desks/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save found desk 4",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"deskNumber\":4,\"name\":\"Arts Block Desk\"}"},
+            "url": "{{baseUrl}}/api/found-desks/save"
+          }
+        },
+        {
+          "name": "Step 0 - Read found desk IDs",
+          "request": {"method": "GET", "url": "{{baseUrl}}/api/found-desks/all"},
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Found desks were created', function () { pm.response.to.have.status(200); });",
+                "const rows = pm.response.json();",
+                "pm.collectionVariables.set('desk1Id', rows.find(row => row.deskNumber === 1).id);",
+                "pm.collectionVariables.set('desk2Id', rows.find(row => row.deskNumber === 2).id);",
+                "pm.collectionVariables.set('desk3Id', rows.find(row => row.deskNumber === 3).id);",
+                "pm.collectionVariables.set('desk4Id', rows.find(row => row.deskNumber === 4).id);"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Step 0 - Save custodian Ada (two categories)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"firstName\":\"Ada\",\"lastName\":\"Mutesi\",\"email\":\"ada@example.com\",\"foundDesk\":{\"id\":\"{{desk1Id}}\"},\"itemCategories\":[{\"id\":\"{{categoryElectronicsId}}\"},{\"id\":\"{{categoryDocumentsId}}\"}]}"
+            },
+            "url": "{{baseUrl}}/api/custodians/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save custodian Eric (one category)",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"firstName\":\"Eric\",\"lastName\":\"Niyonsenga\",\"email\":\"eric@example.com\",\"foundDesk\":{\"id\":\"{{desk2Id}}\"},\"itemCategories\":[{\"id\":\"{{categoryClothingId}}\"}]}"
+            },
+            "url": "{{baseUrl}}/api/custodians/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save custodian Grace",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"firstName\":\"Grace\",\"lastName\":\"Uwimana\",\"email\":\"grace@example.com\",\"foundDesk\":{\"id\":\"{{desk3Id}}\"},\"itemCategories\":[{\"id\":\"{{categoryDocumentsId}}\"}]}"
+            },
+            "url": "{{baseUrl}}/api/custodians/save"
+          }
+        },
+        {
+          "name": "Step 0 - Read custodian IDs",
+          "request": {"method": "GET", "url": "{{baseUrl}}/api/custodians/all"},
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Custodians were created', function () { pm.response.to.have.status(200); });",
+                "const rows = pm.response.json();",
+                "pm.collectionVariables.set('custodianAdaId', rows.find(row => row.email === 'ada@example.com').id);",
+                "pm.collectionVariables.set('custodianEricId', rows.find(row => row.email === 'eric@example.com').id);",
+                "pm.collectionVariables.set('custodianGraceId', rows.find(row => row.email === 'grace@example.com').id);"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Step 0 - Save student Igor Mugisha",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"firstName\":\"Igor\",\"lastName\":\"Mugisha\",\"regNumber\":\"24567\",\"email\":\"igor@example.com\",\"phone\":\"0788000001\"}"},
+            "url": "{{baseUrl}}/api/students/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save student Aline Mugisha",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"firstName\":\"Aline\",\"lastName\":\"Mugisha\",\"regNumber\":\"24568\",\"email\":\"aline@example.com\",\"phone\":\"0788000002\"}"},
+            "url": "{{baseUrl}}/api/students/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save student Diane Niyonzima",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"firstName\":\"Diane\",\"lastName\":\"Niyonzima\",\"regNumber\":\"24569\",\"email\":\"diane@example.com\",\"phone\":\"0788000003\"}"},
+            "url": "{{baseUrl}}/api/students/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save student Eric Uwase",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"firstName\":\"Eric\",\"lastName\":\"Uwase\",\"regNumber\":\"24570\",\"email\":\"eric.student@example.com\",\"phone\":\"0788000004\"}"},
+            "url": "{{baseUrl}}/api/students/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save student Bella Habimana",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\"firstName\":\"Bella\",\"lastName\":\"Habimana\",\"regNumber\":\"24571\",\"email\":\"bella@example.com\",\"phone\":\"0788000005\"}"},
+            "url": "{{baseUrl}}/api/students/save"
+          }
+        },
+        {
+          "name": "Step 0 - Read student IDs",
+          "request": {"method": "GET", "url": "{{baseUrl}}/api/students/all"},
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Students were created', function () { pm.response.to.have.status(200); });",
+                "const rows = pm.response.json();",
+                "pm.collectionVariables.set('studentIgorId', rows.find(row => row.regNumber === '24567').id);",
+                "pm.collectionVariables.set('studentAlineId', rows.find(row => row.regNumber === '24568').id);",
+                "pm.collectionVariables.set('studentDianeId', rows.find(row => row.regNumber === '24569').id);",
+                "pm.collectionVariables.set('studentEricId', rows.find(row => row.regNumber === '24570').id);",
+                "pm.collectionVariables.set('studentBellaId', rows.find(row => row.regNumber === '24571').id);"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Step 0 - Save claim 1 on today's date",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"claimDate\":\"2026-10-30\",\"itemName\":\"Blue laptop\",\"description\":\"Blue laptop near the library\",\"student\":{\"id\":\"{{studentIgorId}}\"},\"custodian\":{\"id\":\"{{custodianAdaId}}\"}}"
+            },
+            "url": "{{baseUrl}}/api/item-claims/save"
+          }
+        },
+        {
+          "name": "Step 0 - Read first claim ID",
+          "request": {"method": "GET", "url": "{{baseUrl}}/api/item-claims/all"},
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "const rows = pm.response.json();",
+                "pm.collectionVariables.set('claim1Id', rows.find(row => row.itemName === 'Blue laptop').id);"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Step 0 - Withdraw claim 1",
+          "request": {
+            "method": "PATCH",
+            "url": "{{baseUrl}}/api/item-claims/{{claim1Id}}/status?status=WITHDRAWN",
+            "description": "This makes another claim for the same custodian and date available under the safe-save rule. Expected: HTTP 200."
+          }
+        },
+        {
+          "name": "Step 0 - Save claim 2 on today's date",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"claimDate\":\"2026-10-30\",\"itemName\":\"Student ID card\",\"description\":\"Student ID card left in room 2\",\"student\":{\"id\":\"{{studentAlineId}}\"},\"custodian\":{\"id\":\"{{custodianAdaId}}\"}}"
+            },
+            "url": "{{baseUrl}}/api/item-claims/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save claim 3 in November",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"claimDate\":\"2026-11-01\",\"itemName\":\"Black backpack\",\"description\":\"Black backpack with two books\",\"student\":{\"id\":\"{{studentIgorId}}\"},\"custodian\":{\"id\":\"{{custodianAdaId}}\"}}"
+            },
+            "url": "{{baseUrl}}/api/item-claims/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save claim 4 in November",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"claimDate\":\"2026-11-02\",\"itemName\":\"Silver watch\",\"description\":\"Small silver watch\",\"student\":{\"id\":\"{{studentDianeId}}\"},\"custodian\":{\"id\":\"{{custodianAdaId}}\"}}"
+            },
+            "url": "{{baseUrl}}/api/item-claims/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save claim 5 in November",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"claimDate\":\"2026-11-03\",\"itemName\":\"Red scarf\",\"description\":\"Red scarf near the student center\",\"student\":{\"id\":\"{{studentEricId}}\"},\"custodian\":{\"id\":\"{{custodianEricId}}\"}}"
+            },
+            "url": "{{baseUrl}}/api/item-claims/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save claim 6 in November",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"claimDate\":\"2026-11-04\",\"itemName\":\"Wireless mouse\",\"description\":\"Black wireless mouse\",\"student\":{\"id\":\"{{studentIgorId}}\"},\"custodian\":{\"id\":\"{{custodianEricId}}\"}}"
+            },
+            "url": "{{baseUrl}}/api/item-claims/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save claim 7 in November",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"claimDate\":\"2026-11-05\",\"itemName\":\"Green jacket\",\"description\":\"Green jacket left in the science block\",\"student\":{\"id\":\"{{studentBellaId}}\"},\"custodian\":{\"id\":\"{{custodianEricId}}\"}}"
+            },
+            "url": "{{baseUrl}}/api/item-claims/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save claim 8 in November",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"claimDate\":\"2026-11-06\",\"itemName\":\"USB drive\",\"description\":\"Small black USB drive\",\"student\":{\"id\":\"{{studentAlineId}}\"},\"custodian\":{\"id\":\"{{custodianGraceId}}\"}}"
+            },
+            "url": "{{baseUrl}}/api/item-claims/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save claim 9 in November",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"claimDate\":\"2026-11-07\",\"itemName\":\"Notebook\",\"description\":\"A notebook with a blue cover\",\"student\":{\"id\":\"{{studentDianeId}}\"},\"custodian\":{\"id\":\"{{custodianGraceId}}\"}}"
+            },
+            "url": "{{baseUrl}}/api/item-claims/save"
+          }
+        },
+        {
+          "name": "Step 0 - Save claim 10 in November",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"claimDate\":\"2026-11-08\",\"itemName\":\"House keys\",\"description\":\"Two house keys on a ring\",\"student\":{\"id\":\"{{studentIgorId}}\"},\"custodian\":{\"id\":\"{{custodianGraceId}}\"}}"
+            },
+            "url": "{{baseUrl}}/api/item-claims/save"
+          }
+        },
+        {
+          "name": "Step 0 - Read claim IDs",
+          "request": {"method": "GET", "url": "{{baseUrl}}/api/item-claims/all"},
+          "event": [{
+            "listen": "test",
+            "script": {
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Ten claims were created', function () { pm.response.to.have.status(200); pm.expect(pm.response.json().length).to.be.at.least(10); });",
+                "const rows = pm.response.json();",
+                "pm.collectionVariables.set('claim1Id', rows.find(row => row.itemName === 'Blue laptop').id);",
+                "pm.collectionVariables.set('claim2Id', rows.find(row => row.itemName === 'Student ID card').id);",
+                "pm.collectionVariables.set('claim3Id', rows.find(row => row.itemName === 'Black backpack').id);",
+                "pm.collectionVariables.set('claim4Id', rows.find(row => row.itemName === 'Silver watch').id);",
+                "pm.collectionVariables.set('claim5Id', rows.find(row => row.itemName === 'Red scarf').id);",
+                "pm.collectionVariables.set('claim6Id', rows.find(row => row.itemName === 'Wireless mouse').id);",
+                "pm.collectionVariables.set('claim7Id', rows.find(row => row.itemName === 'Green jacket').id);",
+                "pm.collectionVariables.set('claim8Id', rows.find(row => row.itemName === 'USB drive').id);",
+                "pm.collectionVariables.set('claim9Id', rows.find(row => row.itemName === 'Notebook').id);",
+                "pm.collectionVariables.set('claim10Id', rows.find(row => row.itemName === 'House keys').id);"
+              ]
+            }
+          }]
+        },
+        {
+          "name": "Step 0 - Set claim 2 to RETURNED",
+          "request": {"method": "PATCH", "url": "{{baseUrl}}/api/item-claims/{{claim2Id}}/status?status=MATCHED"}
+        },
+        {
+          "name": "Step 0 - Complete claim 2 return",
+          "request": {"method": "PATCH", "url": "{{baseUrl}}/api/item-claims/{{claim2Id}}/status?status=RETURNED"}
+        },
+        {
+          "name": "Step 0 - Set claim 3 to MATCHED",
+          "request": {"method": "PATCH", "url": "{{baseUrl}}/api/item-claims/{{claim3Id}}/status?status=MATCHED"}
+        },
+        {
+          "name": "Step 0 - Withdraw claim 5",
+          "request": {"method": "PATCH", "url": "{{baseUrl}}/api/item-claims/{{claim5Id}}/status?status=WITHDRAWN"}
+        },
+        {
+          "name": "Step 0 - Set claim 6 to MATCHED",
+          "request": {"method": "PATCH", "url": "{{baseUrl}}/api/item-claims/{{claim6Id}}/status?status=MATCHED"}
+        },
+        {
+          "name": "Step 0 - Complete claim 6 return",
+          "request": {"method": "PATCH", "url": "{{baseUrl}}/api/item-claims/{{claim6Id}}/status?status=RETURNED"}
+        },
+        {
+          "name": "Step 0 - Set claim 8 to MATCHED",
+          "request": {"method": "PATCH", "url": "{{baseUrl}}/api/item-claims/{{claim8Id}}/status?status=MATCHED"}
+        },
+        {
+          "name": "Step 0 - Set claim 10 to MATCHED",
+          "request": {"method": "PATCH", "url": "{{baseUrl}}/api/item-claims/{{claim10Id}}/status?status=MATCHED"}
+        },
+        {
+          "name": "Step 0 - Complete claim 10 return",
+          "request": {"method": "PATCH", "url": "{{baseUrl}}/api/item-claims/{{claim10Id}}/status?status=RETURNED"}
+        }
+      ]
+    },
+    {
+      "name": "A2 - CRUD and relationship reads",
+      "item": [
+        {"name": "A2 - List item categories", "request": {"method": "GET", "url": "{{baseUrl}}/api/item-categories/all"}},
+        {"name": "A2 - Get one item category", "request": {"method": "GET", "url": "{{baseUrl}}/api/item-categories/{{categoryElectronicsId}}"}},
+        {"name": "A2 - Update item category", "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"name\":\"Electronics\"}"}, "url": "{{baseUrl}}/api/item-categories/update/{{categoryElectronicsId}}"}},
+        {"name": "A2 - List found desks", "request": {"method": "GET", "url": "{{baseUrl}}/api/found-desks/all"}},
+        {"name": "A2 - Get one found desk", "request": {"method": "GET", "url": "{{baseUrl}}/api/found-desks/{{desk1Id}}"}},
+        {"name": "A2 - Update found desk", "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"deskNumber\":1,\"name\":\"Main Library Desk\"}"}, "url": "{{baseUrl}}/api/found-desks/update/{{desk1Id}}"}},
+        {"name": "A2 - List custodians", "request": {"method": "GET", "url": "{{baseUrl}}/api/custodians/all"}},
+        {"name": "A2 - Get one custodian", "request": {"method": "GET", "url": "{{baseUrl}}/api/custodians/{{custodianAdaId}}"}},
+        {"name": "A2 - Update custodian", "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"firstName\":\"Ada\",\"lastName\":\"Mutesi\",\"email\":\"ada@example.com\",\"foundDesk\":{\"id\":\"{{desk1Id}}\"},\"itemCategories\":[{\"id\":\"{{categoryElectronicsId}}\"},{\"id\":\"{{categoryDocumentsId}}\"}]}"}, "url": "{{baseUrl}}/api/custodians/update/{{custodianAdaId}}"}},
+        {"name": "A2 - List students", "request": {"method": "GET", "url": "{{baseUrl}}/api/students/all"}},
+        {"name": "A2 - Get one student", "request": {"method": "GET", "url": "{{baseUrl}}/api/students/{{studentIgorId}}"}},
+        {"name": "A2 - Update student", "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"firstName\":\"Igor\",\"lastName\":\"Mugisha\",\"regNumber\":\"24567\",\"email\":\"igor@example.com\",\"phone\":\"0788000001\"}"}, "url": "{{baseUrl}}/api/students/update/{{studentIgorId}}"}},
+        {"name": "A2 - List item claims", "request": {"method": "GET", "url": "{{baseUrl}}/api/item-claims/all"}},
+        {"name": "A2 - Get one item claim", "request": {"method": "GET", "url": "{{baseUrl}}/api/item-claims/{{claim2Id}}"}},
+        {"name": "A2 - Update item claim without changing status", "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"claimDate\":\"2026-10-30\",\"itemName\":\"Student ID card\",\"description\":\"Updated description\",\"student\":{\"id\":\"{{studentAlineId}}\"},\"custodian\":{\"id\":\"{{custodianAdaId}}\"},\"status\":\"WITHDRAWN\"}"}, "url": "{{baseUrl}}/api/item-claims/update/{{claim2Id}}", "description": "Expected HTTP 200. Status remains RETURNED even though the body asks for WITHDRAWN."}},
+        {"name": "A2 - Unknown student returns 404", "request": {"method": "GET", "url": "{{baseUrl}}/api/students/00000000-0000-0000-0000-000000000001", "description": "Expected HTTP 404: The student with that id does not exist."}}
+      ]
+    },
+    {
+      "name": "B - Derived queries",
+      "item": [
+        {"name": "B1 - Find Mugisha students (case-insensitive)", "request": {"method": "GET", "url": "{{baseUrl}}/api/students/by-last-name?lastName=mUgIsHa"}},
+        {"name": "B2 - Find REPORTED claims", "request": {"method": "GET", "url": "{{baseUrl}}/api/item-claims/by-status?status=REPORTED"}},
+        {"name": "B2 - Invalid status example", "request": {"method": "GET", "url": "{{baseUrl}}/api/item-claims/by-status?status=UNKNOWN", "description": "Expected HTTP 400 from enum parameter conversion."}},
+        {"name": "B3 - Claims in October 2026", "request": {"method": "GET", "url": "{{baseUrl}}/api/item-claims/between?start=2026-10-01&end=2026-10-31"}}
+      ]
+    },
+    {
+      "name": "C - JPQL queries",
+      "item": [
+        {"name": "C1 - Find custodians for Electronics", "request": {"method": "GET", "url": "{{baseUrl}}/api/custodians/by-item-category?name=electro"}},
+        {"name": "C2 - Find free found desks", "request": {"method": "GET", "url": "{{baseUrl}}/api/found-desks/free", "description": "Expected to include desk 4 before D4 moves a custodian."}},
+        {"name": "C3 - Find unused categories", "request": {"method": "GET", "url": "{{baseUrl}}/api/item-categories/unused", "description": "Expected to include Keys. Run before deleting Keys in A2."}},
+        {"name": "C4 - Find students handled by Ada", "request": {"method": "GET", "url": "{{baseUrl}}/api/students/of-custodian/{{custodianAdaId}}"}},
+        {"name": "C4 - Unknown custodian returns 404", "request": {"method": "GET", "url": "{{baseUrl}}/api/students/of-custodian/00000000-0000-0000-0000-000000000001", "description": "Expected HTTP 404: The custodian with that id does not exist."}}
+      ]
+    },
+    {
+      "name": "D - Business rules",
+      "item": [
+        {"name": "D1 - Past claim date is rejected", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"claimDate\":\"2026-10-20\",\"itemName\":\"Old claim\",\"description\":\"Past date test\",\"student\":{\"id\":\"{{studentIgorId}}\"},\"custodian\":{\"id\":\"{{custodianAdaId}}\"}}"}, "url": "{{baseUrl}}/api/item-claims/save", "description": "Expected HTTP 400: Item claim date cannot be in the past."}},
+        {"name": "D1 - Custodian duplicate date is rejected", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"claimDate\":\"2026-10-30\",\"itemName\":\"Duplicate test\",\"description\":\"Ada already has an active claim today\",\"student\":{\"id\":\"{{studentBellaId}}\"},\"custodian\":{\"id\":\"{{custodianAdaId}}\"}}"}, "url": "{{baseUrl}}/api/item-claims/save", "description": "Expected HTTP 409: Custodian already handles a claim on that date."}},
+        {"name": "D2 - Reported claim becomes MATCHED", "request": {"method": "PATCH", "url": "{{baseUrl}}/api/item-claims/{{claim4Id}}/status?status=MATCHED", "description": "Expected HTTP 200: Item claim status updated successfully."}},
+        {"name": "D2 - Final RETURNED claim cannot reopen", "request": {"method": "PATCH", "url": "{{baseUrl}}/api/item-claims/{{claim2Id}}/status?status=REPORTED", "description": "Expected HTTP 400: Cannot change status from RETURNED to REPORTED."}},
+        {"name": "D2 - Unknown claim returns 404", "request": {"method": "PATCH", "url": "{{baseUrl}}/api/item-claims/00000000-0000-0000-0000-000000000001/status?status=MATCHED", "description": "Expected HTTP 404: The item claim with that id does not exist."}},
+        {"name": "D3 - Add Electronics to Grace", "request": {"method": "PUT", "url": "{{baseUrl}}/api/custodians/{{custodianGraceId}}/item-categories/{{categoryElectronicsId}}", "description": "Expected HTTP 200: Item category added to the custodian."}},
+        {"name": "D3 - Duplicate category returns 409", "request": {"method": "PUT", "url": "{{baseUrl}}/api/custodians/{{custodianGraceId}}/item-categories/{{categoryElectronicsId}}", "description": "Expected HTTP 409: The custodian already has that item category."}},
+        {"name": "D4 - Occupied desk returns 409", "request": {"method": "PATCH", "url": "{{baseUrl}}/api/custodians/{{custodianAdaId}}/found-desk?deskNumber=2", "description": "Expected HTTP 409: That found desk is taken by another custodian."}},
+        {"name": "D4 - Move Ada to free desk 4", "request": {"method": "PATCH", "url": "{{baseUrl}}/api/custodians/{{custodianAdaId}}/found-desk?deskNumber=4", "description": "Expected HTTP 200: Found desk changed successfully."}}
+      ]
+    },
+    {
+      "name": "E - Return receipts",
+      "item": [
+        {"name": "E1 - Save receipt for returned claim", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"proofType\":\"Student ID card\",\"remarks\":\"Laptop returned at the library desk\",\"itemsReturned\":1}"}, "url": "{{baseUrl}}/api/return-receipts/save?itemClaimId={{claim2Id}}", "description": "Expected HTTP 201: Return receipt saved successfully."}},
+        {"name": "E1 - Non-returned claim cannot get receipt", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"proofType\":\"Student ID card\",\"remarks\":\"This claim is still reported\",\"itemsReturned\":1}"}, "url": "{{baseUrl}}/api/return-receipts/save?itemClaimId={{claim4Id}}", "description": "Expected HTTP 400: Return receipts are only for RETURNED item claims."}},
+        {"name": "E1 - Unknown claim returns 404", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\"proofType\":\"Student ID card\",\"remarks\":\"Missing claim test\",\"itemsReturned\":1}"}, "url": "{{baseUrl}}/api/return-receipts/save?itemClaimId=00000000-0000-0000-0000-000000000001", "description": "Expected HTTP 404: The item claim with that id does not exist."}},
+        {"name": "E2 - Read receipts for student 24568", "request": {"method": "GET", "url": "{{baseUrl}}/api/return-receipts/student/24568"}},
+        {"name": "E3 - Protect claim that has a receipt", "request": {"method": "DELETE", "url": "{{baseUrl}}/api/item-claims/delete/{{claim2Id}}", "description": "Expected HTTP 409: That item claim has return receipts, delete them first."}},
+        {"name": "E3 - Read receipts and save receipt ID", "request": {"method": "GET", "url": "{{baseUrl}}/api/return-receipts/student/24568"},
+          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["const rows = pm.response.json();", "pm.collectionVariables.set('returnReceiptId', rows[0].id);"]}}]},
+        {"name": "E3 - Delete return receipt", "request": {"method": "DELETE", "url": "{{baseUrl}}/api/return-receipts/delete/{{returnReceiptId}}", "description": "Expected HTTP 200: Return receipt deleted successfully."}},
+        {"name": "E3 - Unknown receipt returns 404", "request": {"method": "DELETE", "url": "{{baseUrl}}/api/return-receipts/delete/00000000-0000-0000-0000-000000000001", "description": "Expected HTTP 404: The return receipt with that id does not exist."}}
+      ]
+    },
+    {
+      "name": "F - Reports and bulk updates",
+      "item": [
+        {"name": "F1 - Count claims by status", "request": {"method": "GET", "url": "{{baseUrl}}/api/item-claims/stats/by-status"}},
+        {"name": "F2 - Cancel claims for an absent custodian", "request": {"method": "PATCH", "url": "{{baseUrl}}/api/item-claims/cancel-day?custodianId={{custodianEricId}}&date=2026-11-05", "description": "Expected body: 1 item claims cancelled. RETURNED claims are not changed."}}
+      ]
+    },
+    {
+      "name": "Bonus",
+      "item": [
+        {"name": "Bonus - Dashboard summary", "request": {"method": "GET", "url": "{{baseUrl}}/api/dashboard/summary"}},
+        {"name": "Bonus - Pageable item claims", "request": {"method": "GET", "url": "{{baseUrl}}/api/item-claims/page?page=0&size=5&sort=claimDate,desc"}}
+      ]
+    },
+    {
+      "name": "A2 - Successful item claim delete (run last)",
+      "item": [
+        {"name": "A2 - Delete unused Keys category", "request": {"method": "DELETE", "url": "{{baseUrl}}/api/item-categories/delete/{{categoryKeysId}}", "description": "Run after C3. Expected HTTP 200: Item category deleted successfully."}},
+        {"name": "A2 - Delete claim after deleting its receipt", "request": {"method": "DELETE", "url": "{{baseUrl}}/api/item-claims/delete/{{claim2Id}}", "description": "Run after E3 has deleted the receipt. Expected HTTP 200: Item claim deleted successfully."}}
+      ]
+    }
+  ]
+}
